@@ -1,23 +1,20 @@
-const bcrypt = require('bcrypt');
+const express = require('express');
+const app = express();
+const User = require('./models/user');
 
-const hashedPassword = async (pw) => {
-  const salt = await bcrypt.genSalt(12);
-  const hash = await bcrypt.hash(pw, salt);
-  console.log(`this is pw before hash ${pw}`);
-  console.log(salt);
-  console.log(hash);
-};
+app.set('view engine', 'ejs');
+app.set('views', 'views');
 
-const login = async (pw, hashedPass) => {
-  const result = await bcrypt.compare(pw, hashedPass);
-  if (result) {
-    console.log('LOGGED IN with correct password');
-  } else {
-    console.log('INCORRECT PASSWORD');
-  }
-};
+app.get('/register', (req, res) => {
+  res.render('register');
+});
 
-// hashedPassword('monkey');
+app.get('/secret', (req, res) => {
+  res.send(
+    'This is Secret shhhhh!!! YOU CANNOT SEE ME UNLESS YOU ARE LOGGED IN'
+  );
+});
 
-// $2b$12$8ASxUnvyKBI00KUyyPhONeesbR5LTdh.nJLUL5qVfWcmWMb5y.ZKi;
-login('monkey', '$2b$12$8ASxUnvyKBI00KUyyPhONeesbR5LTdh.nJLUL5qVfWcmWMb5y.ZKi');
+app.listen('8080', () => {
+  console.log('Currently listening to port 8080');
+});
