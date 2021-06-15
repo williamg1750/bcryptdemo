@@ -18,6 +18,13 @@ app.set('views', 'views');
 app.use(express.urlencoded({ extended: true }));
 app.use(session({ secret: 'notagoodsecret' }));
 
+const requireLogin = (req, res, next) => {
+  if (!req.session.user_id) {
+    res.redirect('/login');
+  }
+  next();
+};
+
 app.get('/', (req, res) => {
   res.send('Home page');
 });
@@ -54,13 +61,21 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.get('/secret', (req, res) => {
-  if (!req.session.user_id) {
-    res.redirect('/login');
-  }
-  res.send(
-    'This is Secret shhhhh!!! YOU CANNOT SEE ME UNLESS YOU ARE LOGGED IN'
-  );
+app.post('/logout', (req, res) => {
+  // req.session.user_id = null;
+  req.session.destroy();
+  res.redirect('/login');
+});
+
+app.get('/secret', requireLogin, (req, res) => {
+  // if (!req.session.user_id) {
+  //   res.redirect('/login');
+  // }
+  res.render('secret');
+});
+
+app.get('/topsecret', requireLogin, (req, res) => {
+  res.send('the meaning of life is 42');
 });
 
 app.listen('8080', () => {
